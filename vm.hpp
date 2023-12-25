@@ -90,6 +90,7 @@ typedef enum
   POP2,
   DUP,
   DUP2 = 0x5c,
+  SWAP = 0x5f,
   IADD = 0x60,
   LADD,
   FADD,

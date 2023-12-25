@@ -363,6 +363,17 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       return;
     }
 
+    case SWAP:
+    {
+      std::any v1 = frame.Pop();
+      std::any v2 = frame.Pop();
+
+      frame.Push(v1);
+      frame.Push(v2);
+
+      break;
+    }
+
     case IADD:
     case ISUB:
     case IMUL:
