@@ -141,7 +141,8 @@ CppDuke::VirtualMachine::Interpreter::_Math(const uint8_t opcode, const std::any
 }
 
 void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t> &kByteCode,
-                                                       int &i)
+                                                       int &i,
+                                                       std::any &rval)
 {
   const uint8_t kOpcode = kByteCode[i];
   char hex[32];
@@ -457,10 +458,28 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       frame.Push(_klassFile.Ldc(kByteCode[++i]));
       break;
 
+    case IRETURN:
+      rval = std::any_cast<int>(frame.Pop());
+      break;
+
+    case LRETURN:
+      rval = std::any_cast<long>(frame.Pop());
+      break;
+
+    case FRETURN:
+      rval = std::any_cast<float>(frame.Pop());
+      break;
+
+    case DRETURN:
+      rval = std::any_cast<double>(frame.Pop());
+      break;
+
+    case ARETURN:
+      rval = frame.Pop();
+      break;
+
     case RETURN:
-      // Hack
-      i = INT_MAX;
-      return;
+      break;
 
     case NEWARRAY:
     {
@@ -491,12 +510,17 @@ void CppDuke::VirtualMachine::Interpreter::_ExecMethod(const std::vector<uint8_t
   std::cout << "Executing " << byteCode.size() - 1 << " instructions\n";
 
   int i = 0;
+  std::any rval;
   while (i < byteCode.size())
   {
-    _ExecOpcode(byteCode, i);
+    _ExecOpcode(byteCode, i, rval);
   }
 
   _frames.pop();
+  if (rval.has_value() && !_frames.empty())
+  {
+    _frames.top().Push(rval);
+  }
 }
 
 void CppDuke::VirtualMachine::Interpreter::Run()

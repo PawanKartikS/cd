@@ -137,7 +137,11 @@ typedef enum
   IF_ICMPLE,
   GOTO = 0xa7,
   IRETURN = 0xac,
-  RETURN = 0xb1,
+  LRETURN,
+  FRETURN,
+  DRETURN,
+  ARETURN,
+  RETURN,
   PUTSTATIC = 0xb3,
   PUTFIELD = 0xb5,
   INVOKESPECIAL = 0xb7,
@@ -174,7 +178,7 @@ private:
   bool _Cmp(const uint8_t &kOpcode);
   static std::any _Math(uint8_t opcode, const std::any &v1, const std::any &v2);
 
-  void _ExecOpcode(const std::vector<uint8_t> &kByteCode, int &i);
+  void _ExecOpcode(const std::vector<uint8_t> &kByteCode, int &i, std::any &rval);
   void _ExecMethod(const std::vector<uint8_t> &byteCode, uint16_t bufferSize);
 
 public:
