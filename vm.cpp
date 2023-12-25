@@ -496,6 +496,22 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       frame.Push(std::any_cast<std::shared_ptr<std::vector<std::any>>>(frame.Pop())->size());
       break;
 
+    case IFNULL:
+      if (frame.Pop().type() == typeid(nullptr))
+      {
+        // Offset used here is relative and not absolute.
+        i += TWO_BYTE_CONSTRUCT(kByteCode, i) - 1;
+      }
+      break;
+
+    case IFNONNULL:
+      if (frame.Pop().type() != typeid(nullptr))
+      {
+        // Offset used here is relative and not absolute.
+        i += TWO_BYTE_CONSTRUCT(kByteCode, i) - 1;
+      }
+      break;
+
     default:
       throw std::invalid_argument("Invalid opcode");
   }

@@ -148,7 +148,9 @@ typedef enum
   INVOKESTATIC,
   NEW = 0xbb,
   NEWARRAY,
-  ARRAYLENGTH = 0xbe
+  ARRAYLENGTH = 0xbe,
+  IFNULL = 0xc6,
+  IFNONNULL,
 } Opcode;
 
 
