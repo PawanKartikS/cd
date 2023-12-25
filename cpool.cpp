@@ -9,6 +9,11 @@ CppDuke::ConstantPool::GenericEntry::GenericEntry(uint16_t v1,
       _v2(v2)  // low bytes
 {}
 
+uint16_t CppDuke::ConstantPool::GenericEntry::Low() const
+{
+  return _v1;
+}
+
 CppDuke::ConstantPool::CodeAttribute::CodeAttribute(uint16_t stack,
                                                     uint16_t locals,
                                                     std::vector<uint8_t> code)

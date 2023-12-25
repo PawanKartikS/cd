@@ -75,6 +75,7 @@ private:
   uint16_t _v1, _v2;
 public:
   explicit GenericEntry(uint16_t v1, uint16_t v2);
+  uint16_t Low() const;
 };
 
 class Utf8 : public PoolEntry

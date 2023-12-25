@@ -55,3 +55,9 @@ CppDuke::KlassFile::GetEntryPoint() const
   return _entryPoint;
 }
 
+std::string CppDuke::KlassFile::Ldc(const int idx) const
+{
+  std::shared_ptr<ConstantPool::GenericEntry> genEntry = std::dynamic_pointer_cast<ConstantPool::GenericEntry>(
+      _pool[idx - 1]);
+  return std::dynamic_pointer_cast<ConstantPool::Utf8>(_pool[genEntry->Low() - 1])->Data();
+}

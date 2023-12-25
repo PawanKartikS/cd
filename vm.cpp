@@ -405,6 +405,10 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       return;
     }
 
+    case LDC:
+      frame.Push(_klassFile.Ldc(kByteCode[++i]));
+      break;
+
     case RETURN:
       // Hack
       i = INT_MAX;

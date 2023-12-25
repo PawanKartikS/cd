@@ -26,5 +26,6 @@ public:
   std::vector<ConstantPool::CommonRef> Methods() const;
 
   std::shared_ptr<ConstantPool::CodeAttribute> GetEntryPoint() const;
+  std::string Ldc(const int idx) const;
 };
 }
