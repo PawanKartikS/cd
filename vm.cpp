@@ -166,23 +166,23 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
     case ICONST_3:
     case ICONST_4:
     case ICONST_5:
-      frame.Push(static_cast<int>(kOpcode) - 3);
+      frame.Push(kOpcode - ICONST_0);
       break;
 
     case LCONST_0:
     case LCONST_1:
-      frame.Push(static_cast<int>(kOpcode) - 9);
+      frame.Push(kOpcode - LCONST_0);
       break;
 
     case FCONST_0:
     case FCONST_1:
     case FCONST_2:
-      frame.Push(static_cast<int>(kOpcode) - 11);
+      frame.Push(kOpcode - FCONST_0);
       break;
 
     case DCONST_0:
     case DCONST_1:
-      frame.Push(static_cast<int>(kOpcode) - 14);
+      frame.Push(kOpcode - DCONST_0);
       break;
 
     case SIPUSH:
