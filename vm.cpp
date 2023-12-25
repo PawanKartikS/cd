@@ -394,6 +394,54 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       return;
     }
 
+    case I2L:
+      frame.Push(static_cast<long>(std::any_cast<int>(frame.Pop())));
+      break;
+
+    case I2F:
+      frame.Push(static_cast<float>(std::any_cast<int>(frame.Pop())));
+      break;
+
+    case I2D:
+      frame.Push(static_cast<double>(std::any_cast<int>(frame.Pop())));
+      break;
+
+    case L2I:
+      frame.Push(static_cast<int>(std::any_cast<long>(frame.Pop())));
+      break;
+
+    case L2F:
+      frame.Push(static_cast<float>(std::any_cast<long>(frame.Pop())));
+      break;
+
+    case L2D:
+      frame.Push(static_cast<double>(std::any_cast<long>(frame.Pop())));
+      break;
+
+    case F2I:
+      frame.Push(static_cast<int>(std::any_cast<float>(frame.Pop())));
+      break;
+
+    case F2L:
+      frame.Push(static_cast<long>(std::any_cast<float>(frame.Pop())));
+      break;
+
+    case F2D:
+      frame.Push(static_cast<double>(std::any_cast<float>(frame.Pop())));
+      break;
+
+    case D2I:
+      frame.Push(static_cast<int>(std::any_cast<double>(frame.Pop())));
+      break;
+
+    case D2L:
+      frame.Push(static_cast<long>(std::any_cast<double>(frame.Pop())));
+      break;
+
+    case D2F:
+      frame.Push(static_cast<float>(std::any_cast<double>(frame.Pop())));
+      break;
+
     case I2C:
       frame.Push(static_cast<char>(std::any_cast<int>(frame.Pop())));
       break;
