@@ -535,6 +535,12 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       }
       break;
 
+    case BREAKPOINT:
+    case IMPDEP1:
+    case IMPDEP2:
+      // Reserved. Decide what to do later.
+      break;
+
     default:
       throw std::invalid_argument("Invalid opcode");
   }
