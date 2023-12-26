@@ -67,6 +67,7 @@ public:
                      std::vector<CommonAttribute> chAttributes);
   std::vector<CommonAttribute> GetChildAttributes() const;
   uint16_t DescIndex() const;
+  uint16_t NameIndex() const;
 };
 
 class GenericEntry : public PoolEntry
@@ -76,6 +77,7 @@ private:
 public:
   explicit GenericEntry(uint16_t v1, uint16_t v2);
   uint16_t Low() const;
+  uint16_t High() const;
 };
 
 class Utf8 : public PoolEntry

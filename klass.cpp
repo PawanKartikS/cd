@@ -55,9 +55,39 @@ CppDuke::KlassFile::GetEntryPoint() const
   return _entryPoint;
 }
 
+std::shared_ptr<CppDuke::ConstantPool::GenericEntry> CppDuke::KlassFile::ResolveLowHigh(const int idx) const
+{
+  auto nameTpe = std::dynamic_pointer_cast<ConstantPool::GenericEntry>(_pool[idx - 1])->High();
+  return std::dynamic_pointer_cast<ConstantPool::GenericEntry>(_pool[nameTpe - 1]);
+}
+
 std::string CppDuke::KlassFile::Ldc(const int idx) const
 {
   std::shared_ptr<ConstantPool::GenericEntry> genEntry = std::dynamic_pointer_cast<ConstantPool::GenericEntry>(
       _pool[idx - 1]);
   return std::dynamic_pointer_cast<ConstantPool::Utf8>(_pool[genEntry->Low() - 1])->Data();
+}
+
+std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
+CppDuke::KlassFile::Invoke(const uint16_t nameIdx, const uint16_t descIdx)
+{
+  auto itr = std::find_if(std::begin(_methods),
+                          std::end(_methods),
+                          [&](const ConstantPool::CommonRef &cref) -> bool
+                          {
+                            return cref.NameIndex() == nameIdx && cref.DescIndex() == descIdx;
+                          });
+
+  if (itr != std::end(_methods))
+  {
+    for (const CppDuke::ConstantPool::CommonAttribute &attr: itr->GetChildAttributes())
+    {
+      if (attr.Name() == "Code")
+      {
+        return attr.GetCodeAttribute();
+      }
+    }
+  }
+
+  throw std::invalid_argument("Could not look up method");
 }

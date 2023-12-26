@@ -398,6 +398,19 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       break;
     }
 
+    case INVOKESTATIC:
+    {
+      std::shared_ptr<CppDuke::ConstantPool::GenericEntry> methodRef = _klassFile.ResolveLowHigh(
+          TWO_BYTE_CONSTRUCT(kByteCode, i));
+      std::shared_ptr<ConstantPool::CodeAttribute> method = _klassFile.Invoke(methodRef->Low(),
+                                                                              methodRef->High());
+
+      _ExecMethod(method->ByteCode(), method->BufferSize());
+
+      i += 2;
+      break;
+    }
+
     case ISHL:
     case ISHR:
     {

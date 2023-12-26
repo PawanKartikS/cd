@@ -14,6 +14,11 @@ uint16_t CppDuke::ConstantPool::GenericEntry::Low() const
   return _v1;
 }
 
+uint16_t CppDuke::ConstantPool::GenericEntry::High() const
+{
+  return _v2;
+}
+
 CppDuke::ConstantPool::CodeAttribute::CodeAttribute(uint16_t stack,
                                                     uint16_t locals,
                                                     std::vector<uint8_t> code)
@@ -77,6 +82,11 @@ CppDuke::ConstantPool::CommonRef::GetChildAttributes() const
 uint16_t CppDuke::ConstantPool::CommonRef::DescIndex() const
 {
   return _descIndex;
+}
+
+uint16_t CppDuke::ConstantPool::CommonRef::NameIndex() const
+{
+  return _nameIndex;
 }
 
 CppDuke::ConstantPool::Utf8::Utf8(const std::string &s) :

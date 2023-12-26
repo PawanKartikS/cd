@@ -26,6 +26,10 @@ public:
   std::vector<ConstantPool::CommonRef> Methods() const;
 
   std::shared_ptr<ConstantPool::CodeAttribute> GetEntryPoint() const;
+  std::shared_ptr<CppDuke::ConstantPool::GenericEntry> ResolveLowHigh(const int idx) const;
+
+  // Eq to VM's opcodes.
   std::string Ldc(const int idx) const;
+  std::shared_ptr<ConstantPool::CodeAttribute> Invoke(const uint16_t nameIdx, const uint16_t descIdx);
 };
 }
