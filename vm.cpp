@@ -586,3 +586,8 @@ void CppDuke::VirtualMachine::Interpreter::Run()
   std::shared_ptr<ConstantPool::CodeAttribute> entryPoint = _klassFile.GetEntryPoint();
   _ExecMethod(entryPoint->ByteCode(), entryPoint->BufferSize());
 }
+
+bool CppDuke::VirtualMachine::Interpreter::CanInline(const ConstantPool::CodeAttribute &method)
+{
+  return method.ByteCode().size() <= 35;
+}

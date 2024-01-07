@@ -191,5 +191,8 @@ private:
 public:
   explicit Interpreter(const KlassFile &klassFile);
   void Run();
+
+  // Utility methods
+  static bool CanInline(const ConstantPool::CodeAttribute &method);
 };
 }
