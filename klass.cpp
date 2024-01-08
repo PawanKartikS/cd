@@ -69,7 +69,7 @@ std::string CppDuke::KlassFile::Ldc(const int idx) const
 }
 
 std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
-CppDuke::KlassFile::Invoke(const uint16_t nameIdx, const uint16_t descIdx)
+CppDuke::KlassFile::Invoke(const uint16_t nameIdx, const uint16_t descIdx, int &argCount)
 {
   auto itr = std::find_if(std::begin(_methods),
                           std::end(_methods),
@@ -78,12 +78,35 @@ CppDuke::KlassFile::Invoke(const uint16_t nameIdx, const uint16_t descIdx)
                             return cref.NameIndex() == nameIdx && cref.DescIndex() == descIdx;
                           });
 
+  argCount = 0;
   if (itr != std::end(_methods))
   {
     for (const CppDuke::ConstantPool::CommonAttribute &attr: itr->GetChildAttributes())
     {
       if (attr.Name() == "Code")
       {
+        const std::string kDesc = std::dynamic_pointer_cast<ConstantPool::Utf8>(_pool[descIdx - 1])->Data();
+
+        char *p = const_cast<char *>(kDesc.c_str());
+        while (*p != ')')
+        {
+          switch (*p++)
+          {
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'F':
+            case 'I':
+            case 'J':
+            case 'S':
+            case 'Z':
+              argCount++;
+            default:
+              // TODO: expand support
+              break;
+          }
+        }
+
         return attr.GetCodeAttribute();
       }
     }

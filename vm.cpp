@@ -402,10 +402,11 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
     {
       std::shared_ptr<CppDuke::ConstantPool::GenericEntry> methodRef = _klassFile.ResolveLowHigh(
           TWO_BYTE_CONSTRUCT(kByteCode, i));
+      int argCount;
       std::shared_ptr<ConstantPool::CodeAttribute> method = _klassFile.Invoke(methodRef->Low(),
-                                                                              methodRef->High());
-
-      _ExecMethod(method->ByteCode(), method->BufferSize());
+                                                                              methodRef->High(),
+                                                                              argCount);
+      _ExecMethod(method->ByteCode(), method->BufferSize(), argCount);
 
       i += 2;
       break;
@@ -562,10 +563,24 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
 }
 
 void CppDuke::VirtualMachine::Interpreter::_ExecMethod(const std::vector<uint8_t> &byteCode,
-                                                       const uint16_t bufferSize)
+                                                       const uint16_t bufferSize,
+                                                       const int kParams)
 {
-  _frames.emplace(bufferSize);
-  std::cout << "Executing " << byteCode.size() - 1 << " instructions\n";
+  Frame caller{bufferSize};
+  if (!_frames.empty() && kParams > 0)
+  {
+    Frame &callee = _frames.top();
+    for (int i = kParams - 1; i >= 0; i--)
+    {
+      caller.Set(i, callee.Pop());
+    }
+  }
+
+  _frames.emplace(caller);
+  std::cout << "Executing "
+            << byteCode.size() - 1
+            << " instructions with "
+            << kParams << "\n";
 
   int i = 0;
   std::any rval;
@@ -584,7 +599,7 @@ void CppDuke::VirtualMachine::Interpreter::_ExecMethod(const std::vector<uint8_t
 void CppDuke::VirtualMachine::Interpreter::Run()
 {
   std::shared_ptr<ConstantPool::CodeAttribute> entryPoint = _klassFile.GetEntryPoint();
-  _ExecMethod(entryPoint->ByteCode(), entryPoint->BufferSize());
+  _ExecMethod(entryPoint->ByteCode(), entryPoint->BufferSize(), /* Temp */ 0);
 }
 
 bool CppDuke::VirtualMachine::Interpreter::CanInline(const ConstantPool::CodeAttribute &method)

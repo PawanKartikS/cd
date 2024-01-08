@@ -186,7 +186,7 @@ private:
   static std::any _Math(uint8_t opcode, const std::any &v1, const std::any &v2);
 
   void _ExecOpcode(const std::vector<uint8_t> &kByteCode, int &i, std::any &rval);
-  void _ExecMethod(const std::vector<uint8_t> &byteCode, uint16_t bufferSize);
+  void _ExecMethod(const std::vector<uint8_t> &byteCode, uint16_t bufferSize, const int kParams);
 
 public:
   explicit Interpreter(const KlassFile &klassFile);

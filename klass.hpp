@@ -30,6 +30,8 @@ public:
 
   // Eq to VM's opcodes.
   std::string Ldc(const int idx) const;
-  std::shared_ptr<ConstantPool::CodeAttribute> Invoke(const uint16_t nameIdx, const uint16_t descIdx);
+  std::shared_ptr<ConstantPool::CodeAttribute> Invoke(const uint16_t nameIdx,
+                                                      const uint16_t descIdx,
+                                                      int &argCount);
 };
 }
