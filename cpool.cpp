@@ -79,6 +79,11 @@ CppDuke::ConstantPool::CommonRef::GetChildAttributes() const
   return _chAttributes;
 }
 
+uint16_t CppDuke::ConstantPool::CommonRef::Flags() const
+{
+  return _fAccess;
+}
+
 uint16_t CppDuke::ConstantPool::CommonRef::DescIndex() const
 {
   return _descIndex;

@@ -18,16 +18,10 @@ CppDuke::KlassFile::KlassFile(
     return;
   }
 
-  for (const ConstantPool::CommonRef &method: _methods)
+  for (const ConstantPool::CommonAttribute &attribute: _methods[entryPointIndex].GetChildAttributes())
   {
-    if (method.DescIndex() == entryPointIndex)
-    {
-      for (const ConstantPool::CommonAttribute &attribute: method.GetChildAttributes())
-      {
-        _entryPoint = attribute.GetCodeAttribute();
-        break;
-      }
-    }
+    _entryPoint = attribute.GetCodeAttribute();
+    break;
   }
 }
 

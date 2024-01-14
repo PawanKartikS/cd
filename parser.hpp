@@ -10,6 +10,7 @@ class Parser
 {
 private:
   FILE *_fd;
+  int _entryPointIndex;
 
   template<typename T>
   [[maybe_unused]] T _Read();

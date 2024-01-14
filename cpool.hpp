@@ -66,6 +66,7 @@ public:
                      uint16_t attributeLength,
                      std::vector<CommonAttribute> chAttributes);
   std::vector<CommonAttribute> GetChildAttributes() const;
+  uint16_t Flags() const;
   uint16_t DescIndex() const;
   uint16_t NameIndex() const;
 };

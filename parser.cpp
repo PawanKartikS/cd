@@ -1,7 +1,9 @@
 #include "parser.hpp"
 
 #if defined __APPLE__
+
 #include <libkern/OSByteOrder.h>
+
 #define be16toh(x) OSSwapBigToHostInt16(x)
 #define be32toh(x) OSSwapBigToHostInt32(x)
 #else
@@ -13,7 +15,8 @@
 using namespace CppDuke;
 
 Parser::Parser(std::string klassFile) :
-    _fd(fopen(klassFile.c_str(), "r"))
+    _fd(fopen(klassFile.c_str(), "r")),
+    _entryPointIndex(-1)
 {}
 
 Parser::~Parser()
@@ -78,7 +81,13 @@ Parser::_ParseConstantPool()
           s[j] = _Read<uint8_t>();
         }
 
-        pool[i] = std::make_shared<ConstantPool::Utf8>(s);
+        std::shared_ptr<ConstantPool::Utf8> utf8 = std::make_shared<ConstantPool::Utf8>(s);
+        if (utf8->Data() == "([Ljava/lang/String;)V")
+        {
+          _entryPointIndex = i + 1;
+        }
+
+        pool[i] = utf8;
         break;
       }
 
@@ -160,7 +169,16 @@ std::vector<ConstantPool::CommonRef> Parser::_ParseMethods(
   std::vector<ConstantPool::CommonRef> methods;
   for (int i = 0; i < length; i++)
   {
-    methods.emplace_back(_ParseCommonFields(pool));
+    ConstantPool::CommonRef method = _ParseCommonFields(pool);
+
+    // TODO: Handle class name
+    if (method.Flags() == (0x0001 | 0x0008) // Method is public and static.
+        && method.DescIndex() == _entryPointIndex) // Signature is void(String[])
+    {
+      _entryPointIndex = methods.size();
+    }
+
+    methods.emplace_back(method);
   }
 
   return methods;
@@ -229,9 +247,7 @@ std::shared_ptr<ConstantPool::CodeAttribute> Parser::_ParseCodeAttribute(
 ConstantPool::CommonRef Parser::_ParseCommonFields(
     std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool)
 {
-  // Skip f_access
-  (void) _Read<uint16_t>();
-
+  uint16_t flags = _Read<uint16_t>();
   uint16_t name = _Read<uint16_t>();
   uint16_t desc = _Read<uint16_t>();
   uint16_t length = _Read<uint16_t>();
@@ -242,7 +258,7 @@ ConstantPool::CommonRef Parser::_ParseCommonFields(
     attributes.emplace_back(_ParseAttribute(pool));
   }
 
-  return ConstantPool::CommonRef{0, // Ignore
+  return ConstantPool::CommonRef{flags,
                                  name,
                                  desc,
                                  length,
@@ -258,18 +274,5 @@ KlassFile Parser::Parse()
   std::vector<ConstantPool::CommonRef> methods = _ParseMethods(pool);
   std::vector<ConstantPool::CommonAttribute> attributes = _ParseKlassAttributes(pool);
 
-  // PSVM detection.
-  // TODO: Improve it.
-  int entryPointIndex = -1;
-  for (int i = 0; i < pool.size(); i++)
-  {
-    std::shared_ptr<ConstantPool::Utf8> utf8 = std::dynamic_pointer_cast<ConstantPool::Utf8>(
-        pool[i]);
-    if (utf8 && utf8->Data() == "([Ljava/lang/String;)V")
-    {
-      entryPointIndex = i + 1;
-    }
-  }
-
-  return KlassFile{pool, fields, methods, attributes, entryPointIndex};
+  return KlassFile{pool, fields, methods, attributes, _entryPointIndex};
 }
