@@ -109,6 +109,12 @@ typedef enum
   DDIV,
   ISHL = 0x78,
   ISHR = 0x7a,
+  IAND = 0x7e,
+  LAND,
+  IOR,
+  LOR,
+  IXOR,
+  LXOR,
   IINC = 0x84,
   I2L,
   I2F,
@@ -183,6 +189,8 @@ private:
   KlassFile _klassFile;
   std::stack<Frame> _frames;
 
+  template<typename _Ty>
+  _Ty _Bitwise(const uint8_t &kOpcode);
   bool _Cmp(const uint8_t &kOpcode);
   static std::any _Math(uint8_t opcode, const std::any &v1, const std::any &v2);
 

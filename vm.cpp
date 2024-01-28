@@ -56,6 +56,38 @@ CppDuke::VirtualMachine::Interpreter::Interpreter(const KlassFile &klassFile)
   }
 }
 
+template<typename _Ty>
+_Ty CppDuke::VirtualMachine::Interpreter::_Bitwise(const uint8_t& kOpcode)
+{
+  _Ty v1 = std::any_cast<_Ty>(_frames.top().Pop());
+  _Ty v2 = std::any_cast<_Ty>(_frames.top().Pop());
+
+  _Ty res{};
+  switch (kOpcode)
+  {
+    case IAND:
+    case LAND:
+      res = v1 & v2;
+      break;
+
+    case IOR:
+    case LOR:
+      res = v1 | v2;
+      break;
+
+    case IXOR:
+    case LXOR:
+      res = v1 ^ v2;
+      break;
+
+    default:
+      // panic
+      break;
+  }
+
+  return res;
+}
+
 bool CppDuke::VirtualMachine::Interpreter::_Cmp(const uint8_t &kOpcode)
 {
   Frame &frame = _frames.top();
@@ -422,6 +454,18 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       frame.Push(res);
       break;
     }
+
+    case IAND:
+    case IOR:
+    case IXOR:
+      frame.Push(_Bitwise<int>(kOpcode));
+      break;
+
+    case LAND:
+    case LOR:
+    case LXOR:
+      frame.Push(_Bitwise<long>(kOpcode));
+      break;
 
     case IINC:
     {
