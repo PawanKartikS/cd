@@ -137,46 +137,38 @@ bool CppDuke::VirtualMachine::Interpreter::_Cmp(const uint8_t &kOpcode)
   }
 }
 
-std::any
-CppDuke::VirtualMachine::Interpreter::_Math(const uint8_t opcode, const std::any &v1, const std::any &v2)
+template<typename _Ty>
+_Ty CppDuke::VirtualMachine::Interpreter::_Math(const uint8_t &opcode)
 {
+  _Ty v1 = std::any_cast<_Ty>(_frames.top().Pop());
+  _Ty v2 = std::any_cast<_Ty>(_frames.top().Pop());
+
   switch (opcode)
   {
     case IADD:
-      return std::any_cast<int>(v1) + std::any_cast<int>(v2);
     case LADD:
-      return std::any_cast<long>(v1) + std::any_cast<long>(v2);
     case FADD:
-      return std::any_cast<float>(v1) + std::any_cast<float>(v2);
     case DADD:
-      return std::any_cast<double>(v1) + std::any_cast<double>(v2);
+      return v1 + v2;
 
     case ISUB:
-      return std::any_cast<int>(v1) - std::any_cast<int>(v2);
     case LSUB:
-      return std::any_cast<long>(v1) - std::any_cast<long>(v2);
     case FSUB:
-      return std::any_cast<float>(v1) - std::any_cast<float>(v2);
     case DSUB:
-      return std::any_cast<double>(v1) - std::any_cast<double>(v2);
+      return v2 - v1;
 
     case IMUL:
-      return std::any_cast<int>(v1) * std::any_cast<int>(v2);
     case LMUL:
-      return std::any_cast<long>(v1) * std::any_cast<long>(v2);
     case FMUL:
-      return std::any_cast<float>(v1) * std::any_cast<float>(v2);
     case DMUL:
-      return std::any_cast<double>(v1) * std::any_cast<double>(v2);
+      return v1 * v2;
 
     case IDIV:
-      return std::any_cast<int>(v1) / std::any_cast<int>(v2);
     case LDIV:
-      return std::any_cast<long>(v1) / std::any_cast<long>(v2);
     case FDIV:
-      return std::any_cast<float>(v1) / std::any_cast<float>(v2);
     case DDIV:
-      return std::any_cast<double>(v1) / std::any_cast<double>(v2);
+      return v2 / v1;
+
     default:
       throw std::invalid_argument("Cannot perform math op for opcode");
   }
@@ -418,25 +410,29 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
     case ISUB:
     case IMUL:
     case IDIV:
+      frame.Push(_Math<int>(kOpcode));
+      break;
+
     case LADD:
     case LSUB:
     case LMUL:
     case LDIV:
+      frame.Push(_Math<long>(kOpcode));
+      break;
+
     case FADD:
     case FSUB:
     case FMUL:
     case FDIV:
+      frame.Push(_Math<float>(kOpcode));
+      break;
+
     case DADD:
     case DSUB:
     case DMUL:
     case DDIV:
-    {
-      std::any o1 = frame.Pop();
-      std::any o2 = frame.Pop();
-      const std::any result = _Math(kOpcode, o2, o1);
-      frame.Push(result);
+      frame.Push(_Math<double>(kOpcode));
       break;
-    }
 
     case INVOKESTATIC:
     {

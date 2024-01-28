@@ -194,7 +194,9 @@ private:
   template<typename _Ty>
   _Ty _Bitwise(const uint8_t &kOpcode);
   bool _Cmp(const uint8_t &kOpcode);
-  static std::any _Math(uint8_t opcode, const std::any &v1, const std::any &v2);
+
+  template<typename _Ty>
+  _Ty _Math(const uint8_t &opcode);
 
   void _ExecOpcode(const std::vector<uint8_t> &kByteCode, int &i, std::any &rval);
   void _ExecMethod(const std::vector<uint8_t> &byteCode, uint16_t bufferSize, const int kParams);
