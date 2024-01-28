@@ -269,6 +269,7 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       frame.Push(frame.At(kOpcode - ALOAD_0));
       break;
 
+    case AALOAD:
     case BALOAD:
     case CALOAD:
     case IALOAD:
