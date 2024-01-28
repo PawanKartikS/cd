@@ -187,9 +187,7 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
                                                        std::any &rval)
 {
   const uint8_t kOpcode = kByteCode[i];
-  char hex[32];
-  snprintf(hex, sizeof(hex), "%x", kOpcode);
-  std::cout << i << ": " << hex << "\n";
+  printf("%d: %x\n", i, kOpcode);
 
   Frame &frame = _frames.top();
   switch (kOpcode)
