@@ -549,6 +549,10 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       }
       break;
 
+    case GOTO_W:
+      i += (kByteCode[i + 1] << 24) | (kByteCode[i + 2] << 16) | (kByteCode[i + 3] << 8) | kByteCode[i + 4];
+      break;
+
     case BREAKPOINT:
     case IMPDEP1:
     case IMPDEP2:

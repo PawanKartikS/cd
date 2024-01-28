@@ -153,6 +153,7 @@ typedef enum
   ARRAYLENGTH = 0xbe,
   IFNULL = 0xc6,
   IFNONNULL,
+  GOTO_W,
   BREAKPOINT = 0xca,
   IMPDEP1 = 0xfe,
   IMPDEP2
