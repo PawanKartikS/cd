@@ -60,24 +60,34 @@ template<typename _Ty>
 _Ty CppDuke::VirtualMachine::Interpreter::_Bitwise(const uint8_t& kOpcode)
 {
   _Ty v1 = std::any_cast<_Ty>(_frames.top().Pop());
-  _Ty v2 = std::any_cast<_Ty>(_frames.top().Pop());
+  std::any v2 = _frames.top().Pop();
 
   _Ty res{};
   switch (kOpcode)
   {
+    case ISHL:
+    case LSHL:
+      res = v1 << std::any_cast<int>(v2);
+      break;
+
+    case ISHR:
+    case LSHR:
+      res = v1 >> std::any_cast<int>(v2);
+      break;
+
     case IAND:
     case LAND:
-      res = v1 & v2;
+      res = v1 & std::any_cast<_Ty>(v2);
       break;
 
     case IOR:
     case LOR:
-      res = v1 | v2;
+      res = v1 | std::any_cast<_Ty>(v2);
       break;
 
     case IXOR:
     case LXOR:
-      res = v1 ^ v2;
+      res = v1 ^ std::any_cast<_Ty>(v2);
       break;
 
     default:
@@ -446,21 +456,14 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
 
     case ISHL:
     case ISHR:
-    {
-      int val = std::any_cast<int>(frame.Pop());
-      int amt = std::any_cast<int>(frame.Pop());
-      int res = kOpcode == ISHL ? val << amt : val >> amt;
-
-      frame.Push(res);
-      break;
-    }
-
     case IAND:
     case IOR:
     case IXOR:
       frame.Push(_Bitwise<int>(kOpcode));
       break;
 
+    case LSHL:
+    case LSHR:
     case LAND:
     case LOR:
     case LXOR:
