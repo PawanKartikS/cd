@@ -14,7 +14,7 @@
 
 using namespace CppDuke;
 
-Parser::Parser(std::string klassFile) :
+Parser::Parser(const std::string &klassFile) :
     _fd(fopen(klassFile.c_str(), "r")),
     _entryPointIndex(-1)
 {}
@@ -150,7 +150,7 @@ void Parser::_ParseMeta()
 }
 
 std::vector<ConstantPool::CommonRef> Parser::_ParseKlassFields(
-    std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool)
+  const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool)
 {
   uint16_t length = _Read<uint16_t>();
   std::vector<ConstantPool::CommonRef> fields;
@@ -163,7 +163,7 @@ std::vector<ConstantPool::CommonRef> Parser::_ParseKlassFields(
 }
 
 std::vector<ConstantPool::CommonRef> Parser::_ParseMethods(
-    std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool)
+  const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool)
 {
   uint16_t length = _Read<uint16_t>();
   std::vector<ConstantPool::CommonRef> methods;
@@ -185,7 +185,7 @@ std::vector<ConstantPool::CommonRef> Parser::_ParseMethods(
 }
 
 std::vector<ConstantPool::CommonAttribute> Parser::_ParseKlassAttributes(
-    std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool)
+  const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool)
 {
   uint16_t length = _Read<uint16_t>();
   std::vector<ConstantPool::CommonAttribute> attributes;
@@ -198,7 +198,7 @@ std::vector<ConstantPool::CommonAttribute> Parser::_ParseKlassAttributes(
 }
 
 ConstantPool::CommonAttribute Parser::_ParseAttribute(
-    std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool)
+  const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool)
 {
   uint16_t name = _Read<uint16_t>();
   uint32_t length = _Read<uint32_t>();
@@ -220,7 +220,7 @@ ConstantPool::CommonAttribute Parser::_ParseAttribute(
 }
 
 std::shared_ptr<ConstantPool::CodeAttribute> Parser::_ParseCodeAttribute(
-    std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool)
+  const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool)
 {
   uint16_t stack = _Read<uint16_t>();
   uint16_t local = _Read<uint16_t>();
@@ -245,7 +245,7 @@ std::shared_ptr<ConstantPool::CodeAttribute> Parser::_ParseCodeAttribute(
 }
 
 ConstantPool::CommonRef Parser::_ParseCommonFields(
-    std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool)
+  const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool)
 {
   uint16_t flags = _Read<uint16_t>();
   uint16_t name = _Read<uint16_t>();
