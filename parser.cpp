@@ -28,17 +28,17 @@ template<typename T>
 T Parser::_Read()
 {
   static_assert(
-      std::is_same<T, uint8_t>::value
-      || std::is_same<T, uint16_t>::value
-      || std::is_same<T, uint32_t>::value);
+      std::is_same_v<T, uint8_t>
+      || std::is_same_v<T, uint16_t>
+      || std::is_same_v<T, uint32_t>);
   const unsigned long dwSize = sizeof(T);
 
   T bits;
   fread(&bits, dwSize, /* nitems = */1, _fd);
-  if (std::is_same<T, uint16_t>::value)
+  if (std::is_same_v<T, uint16_t>)
   {
     bits = be16toh(bits);
-  } else if (std::is_same<T, uint32_t>::value)
+  } else if (std::is_same_v<T, uint32_t>)
   {
     bits = be32toh(bits);
   }
