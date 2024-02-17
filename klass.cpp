@@ -5,8 +5,7 @@ CppDuke::Klass::Klass(
   std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool,
   std::vector<ConstantPool::CommonRef> fields,
   std::vector<ConstantPool::CommonRef> methods,
-  std::vector<ConstantPool::CommonAttribute> attributes,
-  int entryPointIndex = -1)
+  std::vector<ConstantPool::CommonAttribute> attributes)
   : _name(name),
     _entryPoint(nullptr),
     _pool(pool),
@@ -14,17 +13,6 @@ CppDuke::Klass::Klass(
     _methods(methods),
     _attributes(attributes) // PSVM
 {
-  // Store a ref to PSVM if exists.
-  if (entryPointIndex < 0)
-  {
-    return;
-  }
-
-  for (const ConstantPool::CommonAttribute &attribute: _methods[entryPointIndex].GetChildAttributes())
-  {
-    _entryPoint = attribute.GetCodeAttribute();
-    break;
-  }
 }
 
 std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>>
@@ -43,6 +31,12 @@ std::vector<CppDuke::ConstantPool::CommonRef>
 CppDuke::Klass::Methods() const
 {
   return _methods;
+}
+
+std::string
+CppDuke::Klass::Name() const
+{
+  return _name;
 }
 
 std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
@@ -65,7 +59,7 @@ std::string CppDuke::Klass::Ldc(const int idx) const
 }
 
 std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
-CppDuke::Klass::Invoke(const uint16_t nameIdx, const uint16_t descIdx, int &argCount)
+CppDuke::Klass::Invoke(const uint16_t nameIdx, const uint16_t descIdx, int &argCount) const
 {
   auto itr = std::find_if(std::begin(_methods),
                           std::end(_methods),

@@ -47,13 +47,11 @@ std::size_t CppDuke::VirtualMachine::Frame::Size() const
   return _stack.size();
 }
 
-CppDuke::VirtualMachine::Interpreter::Interpreter(const Klass &klassFile)
-    : _klassFile(klassFile) // The file that contains PSVM
+CppDuke::VirtualMachine::Interpreter::Interpreter(const std::vector<Klass> &klasses,
+                                                  const std::string &kMain)
+    : _main(kMain),
+      _klasses(klasses)
 {
-  if (_klassFile.GetEntryPoint() == nullptr)
-  {
-    // Error out?
-  }
 }
 
 template<typename _Ty>
@@ -178,6 +176,7 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
                                                        int &i,
                                                        std::any &rval)
 {
+  const Klass &klass = _trace.top();
   const uint8_t kOpcode = kByteCode[i];
   printf("%d: %x\n", i, kOpcode);
 
@@ -437,10 +436,10 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
 
     case INVOKESTATIC:
     {
-      std::shared_ptr<CppDuke::ConstantPool::GenericEntry> methodRef = _klassFile.ResolveLowHigh(
+      std::shared_ptr<CppDuke::ConstantPool::GenericEntry> methodRef = klass.ResolveLowHigh(
           TWO_BYTE_CONSTRUCT(kByteCode, i));
       int argCount;
-      std::shared_ptr<ConstantPool::CodeAttribute> method = _klassFile.Invoke(methodRef->Low(),
+      std::shared_ptr<ConstantPool::CodeAttribute> method = klass.Invoke(methodRef->Low(),
                                                                               methodRef->High(),
                                                                               argCount);
       _ExecMethod(method->ByteCode(), method->BufferSize(), argCount);
@@ -534,7 +533,7 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
     }
 
     case LDC:
-      frame.Push(_klassFile.Ldc(kByteCode[++i]));
+      frame.Push(klass.Ldc(kByteCode[++i]));
       break;
 
     case IRETURN:
@@ -642,10 +641,68 @@ void CppDuke::VirtualMachine::Interpreter::_ExecMethod(const std::vector<uint8_t
   }
 }
 
+std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
+CppDuke::VirtualMachine::Interpreter::_LookupEntryPoint(const Klass& klass)
+{
+  int i = 0, found = 0;
+  for (std::shared_ptr<ConstantPool::PoolEntry> e: klass.Pool())
+  {
+    if (auto casted = std::dynamic_pointer_cast<ConstantPool::Utf8>(e);
+      casted
+      && casted->Data() == "([Ljava/lang/String;)V")
+    {
+      found = 1;
+      break;
+    }
+
+    i++;
+  }
+
+  if (found)
+  {
+    for (const ConstantPool::CommonRef &m: klass.Methods())
+    {
+      if (m.DescIndex() == i + 1 && m.Flags() == (0x0001 | 0x0008))
+      {
+        for (const ConstantPool::CommonAttribute &attr: m.GetChildAttributes())
+        {
+          if (std::shared_ptr<ConstantPool::CodeAttribute> code = attr.GetCodeAttribute())
+          {
+            return code;
+          }
+        }
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 void CppDuke::VirtualMachine::Interpreter::Run()
 {
-  std::shared_ptr<ConstantPool::CodeAttribute> entryPoint = _klassFile.GetEntryPoint();
-  _ExecMethod(entryPoint->ByteCode(), entryPoint->BufferSize(), /* Temp */ 0);
+  auto main = std::find_if(std::begin(_klasses), std::end(_klasses),
+                           [this](const Klass &k) -> bool
+                           {
+                             return k.Name() == _main;
+                           });
+
+  if (main == std::end(_klasses))
+  {
+    fprintf(stderr, "Could not find class %s\n", _main.c_str());
+    return;
+  }
+
+  auto entryPoint = Interpreter::_LookupEntryPoint(*main);
+  if (entryPoint)
+  {
+    _trace.push(*main);
+    _ExecMethod(entryPoint->ByteCode(), entryPoint->BufferSize(), /* Temp */ 0);
+    _trace.pop();
+  }
+  else
+  {
+    fprintf(stderr, "Could not find entry point in class %s\n", _main.c_str());
+  }
 }
 
 bool CppDuke::VirtualMachine::Interpreter::CanInline(const ConstantPool::CodeAttribute &method)

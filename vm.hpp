@@ -188,8 +188,9 @@ public:
 
 class Interpreter
 {
-private:
-  Klass _klassFile;
+  std::string _main;
+  std::vector<Klass> _klasses;
+  std::stack<Klass> _trace;
   std::stack<Frame> _frames;
 
   template<typename _Ty>
@@ -201,9 +202,10 @@ private:
 
   void _ExecOpcode(const std::vector<uint8_t> &kByteCode, int &i, std::any &rval);
   void _ExecMethod(const std::vector<uint8_t> &byteCode, uint16_t bufferSize, const int kParams);
+  static std::shared_ptr<ConstantPool::CodeAttribute> _LookupEntryPoint(const Klass &klass);
 
 public:
-  explicit Interpreter(const Klass &klassFile);
+  explicit Interpreter(const std::vector<Klass> &klasses, const std::string &kMain);
   void Run();
 
   // Utility methods

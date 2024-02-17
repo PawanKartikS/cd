@@ -15,8 +15,7 @@
 using namespace CppDuke;
 
 Parser::Parser(const std::string &klassFile) :
-    _fd(fopen(klassFile.c_str(), "r")),
-    _entryPointIndex(-1)
+    _fd(fopen(klassFile.c_str(), "r"))
 {}
 
 Parser::~Parser()
@@ -81,13 +80,7 @@ Parser::_ParseConstantPool()
           s[j] = _Read<uint8_t>();
         }
 
-        std::shared_ptr<ConstantPool::Utf8> utf8 = std::make_shared<ConstantPool::Utf8>(s);
-        if (utf8->Data() == "([Ljava/lang/String;)V")
-        {
-          _entryPointIndex = i + 1;
-        }
-
-        pool[i] = utf8;
+        pool[i] = std::make_shared<ConstantPool::Utf8>(s);
         break;
       }
 
@@ -165,16 +158,7 @@ std::vector<ConstantPool::CommonRef> Parser::_ParseMethods(
   std::vector<ConstantPool::CommonRef> methods;
   for (int i = 0; i < length; i++)
   {
-    ConstantPool::CommonRef method = _ParseCommonFields(pool);
-
-    // TODO: Handle class name
-    if (method.Flags() == (0x0001 | 0x0008) // Method is public and static.
-        && method.DescIndex() == _entryPointIndex) // Signature is void(String[])
-    {
-      _entryPointIndex = methods.size();
-    }
-
-    methods.emplace_back(method);
+    methods.emplace_back(_ParseCommonFields(pool));
   }
 
   return methods;
@@ -273,5 +257,5 @@ Klass Parser::Parse()
   auto klassInfo = std::dynamic_pointer_cast<ConstantPool::KlassInfo>(pool[_this - 1]);
   std::string name = std::dynamic_pointer_cast<ConstantPool::Utf8>(pool[klassInfo->NameIndex() - 1])->Data();
 
-  return Klass{name, pool, fields, methods, attributes, _entryPointIndex};
+  return Klass{name, pool, fields, methods, attributes};
 }

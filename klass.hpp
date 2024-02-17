@@ -19,12 +19,12 @@ public:
                  std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool,
                  std::vector<ConstantPool::CommonRef> fields,
                  std::vector<ConstantPool::CommonRef> methods,
-                 std::vector<ConstantPool::CommonAttribute> attributes,
-                 int entryPointIndex);
+                 std::vector<ConstantPool::CommonAttribute> attributes);
 
   std::vector<std::shared_ptr<ConstantPool::PoolEntry>> Pool() const;
   std::vector<ConstantPool::CommonRef> Fields() const;
   std::vector<ConstantPool::CommonRef> Methods() const;
+  std::string Name() const;
 
   std::shared_ptr<ConstantPool::CodeAttribute> GetEntryPoint() const;
   std::shared_ptr<CppDuke::ConstantPool::GenericEntry> ResolveLowHigh(const int idx) const;
@@ -33,6 +33,6 @@ public:
   std::string Ldc(const int idx) const;
   std::shared_ptr<ConstantPool::CodeAttribute> Invoke(const uint16_t nameIdx,
                                                       const uint16_t descIdx,
-                                                      int &argCount);
+                                                      int &argCount) const;
 };
 }

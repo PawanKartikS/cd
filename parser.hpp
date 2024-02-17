@@ -10,7 +10,6 @@ class Parser
 {
   FILE* _fd;
   uint16_t _this;
-  int _entryPointIndex;
 
   template<typename T>
   [[maybe_unused]] T _Read();
