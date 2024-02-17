@@ -47,7 +47,7 @@ std::size_t CppDuke::VirtualMachine::Frame::Size() const
   return _stack.size();
 }
 
-CppDuke::VirtualMachine::Interpreter::Interpreter(const KlassFile &klassFile)
+CppDuke::VirtualMachine::Interpreter::Interpreter(const Klass &klassFile)
     : _klassFile(klassFile) // The file that contains PSVM
 {
   if (_klassFile.GetEntryPoint() == nullptr)

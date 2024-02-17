@@ -8,8 +8,8 @@ namespace CppDuke
 {
 class Parser
 {
-private:
   FILE* _fd;
+  uint16_t _this;
   int _entryPointIndex;
 
   template<typename T>
@@ -49,7 +49,7 @@ private:
 public:
   explicit Parser(const std::string &klassFile);
 
-  CppDuke::KlassFile Parse();
+  CppDuke::Klass Parse();
 
   ~Parser();
 };

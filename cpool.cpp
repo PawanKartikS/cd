@@ -102,3 +102,13 @@ std::string CppDuke::ConstantPool::Utf8::Data() const
 {
   return _S;
 }
+
+CppDuke::ConstantPool::KlassInfo::KlassInfo(uint16_t v)
+{
+  _nameIndex = v;
+}
+
+uint16_t CppDuke::ConstantPool::KlassInfo::NameIndex() const
+{
+  return _nameIndex;
+}

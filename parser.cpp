@@ -103,10 +103,7 @@ Parser::_ParseConstantPool()
 
       case ConstantPool::EntryType::CLASS:
       {
-        pool[i] = std::make_shared<ConstantPool::GenericEntry>(
-            _Read<uint16_t>(), // Name index
-            0 // Ignore, zero value
-        );
+        pool[i] = std::make_shared<ConstantPool::KlassInfo>(_Read<uint16_t>());
         break;
       }
 
@@ -137,10 +134,9 @@ Parser::_ParseConstantPool()
 
 void Parser::_ParseMeta()
 {
-  for (int i = 0; i < 3; i++)
-  {
-    (void) _Read<uint16_t>(); // Skip f_access, this, and f_super
-  }
+  (void) _Read<uint16_t>();
+  _this = _Read<uint16_t>();
+  (void) _Read<uint16_t>();
 
   uint16_t infLen = _Read<uint16_t>();
   for (int i = 0; i < infLen; i++)
@@ -265,7 +261,7 @@ ConstantPool::CommonRef Parser::_ParseCommonFields(
                                  attributes};
 }
 
-KlassFile Parser::Parse()
+Klass Parser::Parse()
 {
   _ParseHeaders();
   std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool = _ParseConstantPool();
@@ -274,5 +270,8 @@ KlassFile Parser::Parse()
   std::vector<ConstantPool::CommonRef> methods = _ParseMethods(pool);
   std::vector<ConstantPool::CommonAttribute> attributes = _ParseKlassAttributes(pool);
 
-  return KlassFile{pool, fields, methods, attributes, _entryPointIndex};
+  auto klassInfo = std::dynamic_pointer_cast<ConstantPool::KlassInfo>(pool[_this - 1]);
+  std::string name = std::dynamic_pointer_cast<ConstantPool::Utf8>(pool[klassInfo->NameIndex() - 1])->Data();
+
+  return Klass{name, pool, fields, methods, attributes, _entryPointIndex};
 }

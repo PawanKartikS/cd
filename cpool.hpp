@@ -91,4 +91,11 @@ public:
   std::string Data() const;
 };
 
+class KlassInfo : public PoolEntry
+{
+  uint16_t _nameIndex;
+public:
+  explicit KlassInfo(uint16_t v);
+  uint16_t NameIndex() const;
+};
 } // CppDuke::ConstantPool

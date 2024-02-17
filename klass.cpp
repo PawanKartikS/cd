@@ -1,16 +1,18 @@
 #include "klass.hpp"
 
-CppDuke::KlassFile::KlassFile(
-    std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>> pool,
-    std::vector<CppDuke::ConstantPool::CommonRef> fields,
-    std::vector<CppDuke::ConstantPool::CommonRef> methods,
-    std::vector<CppDuke::ConstantPool::CommonAttribute> attributes,
-    int entryPointIndex = -1)
-    : _pool(pool),
-      _fields(fields),
-      _methods(methods),
-      _attributes(attributes),
-      _entryPoint(nullptr) // PSVM
+CppDuke::Klass::Klass(
+  const std::string &name,
+  std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool,
+  std::vector<ConstantPool::CommonRef> fields,
+  std::vector<ConstantPool::CommonRef> methods,
+  std::vector<ConstantPool::CommonAttribute> attributes,
+  int entryPointIndex = -1)
+  : _name(name),
+    _entryPoint(nullptr),
+    _pool(pool),
+    _fields(fields),
+    _methods(methods),
+    _attributes(attributes) // PSVM
 {
   // Store a ref to PSVM if exists.
   if (entryPointIndex < 0)
@@ -26,36 +28,36 @@ CppDuke::KlassFile::KlassFile(
 }
 
 std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>>
-CppDuke::KlassFile::Pool() const
+CppDuke::Klass::Pool() const
 {
   return _pool;
 }
 
 std::vector<CppDuke::ConstantPool::CommonRef>
-CppDuke::KlassFile::Fields() const
+CppDuke::Klass::Fields() const
 {
   return _fields;
 }
 
 std::vector<CppDuke::ConstantPool::CommonRef>
-CppDuke::KlassFile::Methods() const
+CppDuke::Klass::Methods() const
 {
   return _methods;
 }
 
 std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
-CppDuke::KlassFile::GetEntryPoint() const
+CppDuke::Klass::GetEntryPoint() const
 {
   return _entryPoint;
 }
 
-std::shared_ptr<CppDuke::ConstantPool::GenericEntry> CppDuke::KlassFile::ResolveLowHigh(const int idx) const
+std::shared_ptr<CppDuke::ConstantPool::GenericEntry> CppDuke::Klass::ResolveLowHigh(const int idx) const
 {
   auto nameTpe = std::dynamic_pointer_cast<ConstantPool::GenericEntry>(_pool[idx - 1])->High();
   return std::dynamic_pointer_cast<ConstantPool::GenericEntry>(_pool[nameTpe - 1]);
 }
 
-std::string CppDuke::KlassFile::Ldc(const int idx) const
+std::string CppDuke::Klass::Ldc(const int idx) const
 {
   std::shared_ptr<ConstantPool::GenericEntry> genEntry = std::dynamic_pointer_cast<ConstantPool::GenericEntry>(
       _pool[idx - 1]);
@@ -63,7 +65,7 @@ std::string CppDuke::KlassFile::Ldc(const int idx) const
 }
 
 std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
-CppDuke::KlassFile::Invoke(const uint16_t nameIdx, const uint16_t descIdx, int &argCount)
+CppDuke::Klass::Invoke(const uint16_t nameIdx, const uint16_t descIdx, int &argCount)
 {
   auto itr = std::find_if(std::begin(_methods),
                           std::end(_methods),

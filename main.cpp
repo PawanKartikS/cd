@@ -14,12 +14,9 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  Parser p(argv[1]);
-  KlassFile klassName = p.Parse();
-
   // Typical hack for now.
   // This is not how JVM finds class files.
-  VirtualMachine::Interpreter(klassName).Run();
+  VirtualMachine::Interpreter(Parser{argv[1]}.Parse()).Run();
 
   return 0;
 }

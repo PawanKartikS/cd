@@ -189,7 +189,7 @@ public:
 class Interpreter
 {
 private:
-  KlassFile _klassFile;
+  Klass _klassFile;
   std::stack<Frame> _frames;
 
   template<typename _Ty>
@@ -203,7 +203,7 @@ private:
   void _ExecMethod(const std::vector<uint8_t> &byteCode, uint16_t bufferSize, const int kParams);
 
 public:
-  explicit Interpreter(const KlassFile &klassFile);
+  explicit Interpreter(const Klass &klassFile);
   void Run();
 
   // Utility methods
