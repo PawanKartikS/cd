@@ -559,6 +559,20 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
     case RETURN:
       break;
 
+    case NEW:
+    {
+      int cc = TWO_BYTE_CONSTRUCT(kByteCode, i);
+      std::vector<std::shared_ptr<ConstantPool::PoolEntry>> pool = klass.Pool();
+      uint16_t ni = std::dynamic_pointer_cast<ConstantPool::KlassInfo>(pool[cc - 1])->NameIndex();
+      std::string name = std::dynamic_pointer_cast<ConstantPool::Utf8>(pool[ni - 1])->Data();
+
+      Klass k = _LoadKlass(name);
+      frame.Push(k);
+
+      i += 2;
+      break;
+    }
+
     case NEWARRAY:
     {
       std::shared_ptr<std::vector<std::any>> arr = std::make_shared<std::vector<std::any>>();
@@ -639,6 +653,23 @@ void CppDuke::VirtualMachine::Interpreter::_ExecMethod(const std::vector<uint8_t
   {
     _frames.top().Push(rval);
   }
+}
+
+CppDuke::Klass
+CppDuke::VirtualMachine::Interpreter::_LoadKlass(const std::string& name) const
+{
+  const auto itr = std::find_if(std::begin(_klasses), std::end(_klasses),
+                                [name](const Klass &k) -> bool
+                                {
+                                  return k.Name() == name;
+                                });
+
+  if (itr == std::end(_klasses))
+  {
+    throw std::invalid_argument("Could not find class " + name);
+  }
+
+  return *itr;
 }
 
 std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>

@@ -202,6 +202,7 @@ class Interpreter
 
   void _ExecOpcode(const std::vector<uint8_t> &kByteCode, int &i, std::any &rval);
   void _ExecMethod(const std::vector<uint8_t> &byteCode, uint16_t bufferSize, const int kParams);
+  Klass _LoadKlass(const std::string &name) const;
   static std::shared_ptr<ConstantPool::CodeAttribute> _LookupEntryPoint(const Klass &klass);
 
 public:
