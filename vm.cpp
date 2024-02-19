@@ -49,9 +49,12 @@ std::size_t CppDuke::VirtualMachine::Frame::Size() const
 
 CppDuke::VirtualMachine::Interpreter::Interpreter(const std::vector<Klass> &klasses,
                                                   const std::string &kMain)
-    : _main(kMain),
-      _klasses(klasses)
+    : _main(kMain)
 {
+  for (const Klass &k: klasses)
+  {
+    _klasses.emplace(std::pair{k.Name(), k});
+  }
 }
 
 template<typename _Ty>
@@ -566,8 +569,7 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
       uint16_t ni = std::dynamic_pointer_cast<ConstantPool::KlassInfo>(pool[cc - 1])->NameIndex();
       std::string name = std::dynamic_pointer_cast<ConstantPool::Utf8>(pool[ni - 1])->Data();
 
-      Klass k = _LoadKlass(name);
-      frame.Push(k);
+      frame.Push(_klasses.find(name)->second);
 
       i += 2;
       break;
@@ -655,23 +657,6 @@ void CppDuke::VirtualMachine::Interpreter::_ExecMethod(const std::vector<uint8_t
   }
 }
 
-CppDuke::Klass
-CppDuke::VirtualMachine::Interpreter::_LoadKlass(const std::string& name) const
-{
-  const auto itr = std::find_if(std::begin(_klasses), std::end(_klasses),
-                                [name](const Klass &k) -> bool
-                                {
-                                  return k.Name() == name;
-                                });
-
-  if (itr == std::end(_klasses))
-  {
-    throw std::invalid_argument("Could not find class " + name);
-  }
-
-  return *itr;
-}
-
 std::shared_ptr<CppDuke::ConstantPool::CodeAttribute>
 CppDuke::VirtualMachine::Interpreter::_LookupEntryPoint(const Klass& klass)
 {
@@ -711,22 +696,11 @@ CppDuke::VirtualMachine::Interpreter::_LookupEntryPoint(const Klass& klass)
 
 void CppDuke::VirtualMachine::Interpreter::Run()
 {
-  auto main = std::find_if(std::begin(_klasses), std::end(_klasses),
-                           [this](const Klass &k) -> bool
-                           {
-                             return k.Name() == _main;
-                           });
-
-  if (main == std::end(_klasses))
-  {
-    fprintf(stderr, "Could not find class %s\n", _main.c_str());
-    return;
-  }
-
-  auto entryPoint = Interpreter::_LookupEntryPoint(*main);
+  Klass main = _klasses.find(_main)->second;
+  auto entryPoint = Interpreter::_LookupEntryPoint(main);
   if (entryPoint)
   {
-    _trace.push(*main);
+    _trace.push(main);
     _ExecMethod(entryPoint->ByteCode(), entryPoint->BufferSize(), /* Temp */ 0);
     _trace.pop();
   }
