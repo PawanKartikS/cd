@@ -23,32 +23,32 @@ class Parser
 
   [[nodiscard]]
   std::vector<ConstantPool::CommonRef>
-  _ParseKlassFields(const std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>> &pool);
+  _ParseKlassFields(const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool);
 
   [[nodiscard]]
-  std::vector<CppDuke::ConstantPool::CommonRef>
-  _ParseMethods(const std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>> &pool);
+  std::vector<ConstantPool::CommonRef>
+  _ParseMethods(const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool);
 
   [[nodiscard]]
   std::vector<ConstantPool::CommonAttribute>
-  _ParseKlassAttributes(const std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>> &pool);
+  _ParseKlassAttributes(const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool);
 
   [[nodiscard]]
   ConstantPool::CommonAttribute
-  _ParseAttribute(const std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>> &pool);
+  _ParseAttribute(const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool);
 
   [[nodiscard]]
   std::shared_ptr<ConstantPool::CodeAttribute>
-  _ParseCodeAttribute(const std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>> &pool);
+  _ParseCodeAttribute(const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool);
 
   [[nodiscard]]
   ConstantPool::CommonRef
-  _ParseCommonFields(const std::vector<std::shared_ptr<CppDuke::ConstantPool::PoolEntry>> &pool);
+  _ParseCommonFields(const std::vector<std::shared_ptr<ConstantPool::PoolEntry>> &pool);
 
 public:
   explicit Parser(const std::string &klassFile);
 
-  CppDuke::Klass Parse();
+  Klass Parse();
 
   ~Parser();
 };

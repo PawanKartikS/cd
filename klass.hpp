@@ -27,7 +27,7 @@ public:
   std::string Name() const;
 
   std::shared_ptr<ConstantPool::CodeAttribute> GetEntryPoint() const;
-  std::shared_ptr<CppDuke::ConstantPool::GenericEntry> ResolveLowHigh(const int idx) const;
+  std::shared_ptr<ConstantPool::GenericEntry> ResolveLowHigh(const int idx) const;
 
   // Eq to VM's opcodes.
   std::string Ldc(const int idx) const;

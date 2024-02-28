@@ -71,7 +71,7 @@ CppDuke::Klass::Invoke(const uint16_t nameIdx, const uint16_t descIdx, int &argC
   argCount = 0;
   if (itr != std::end(_methods))
   {
-    for (const CppDuke::ConstantPool::CommonAttribute &attr: itr->GetChildAttributes())
+    for (const ConstantPool::CommonAttribute &attr: itr->GetChildAttributes())
     {
       if (attr.Name() == "Code")
       {

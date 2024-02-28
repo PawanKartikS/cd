@@ -439,7 +439,7 @@ void CppDuke::VirtualMachine::Interpreter::_ExecOpcode(const std::vector<uint8_t
 
     case INVOKESTATIC:
     {
-      std::shared_ptr<CppDuke::ConstantPool::GenericEntry> methodRef = klass.ResolveLowHigh(
+      std::shared_ptr<ConstantPool::GenericEntry> methodRef = klass.ResolveLowHigh(
           TWO_BYTE_CONSTRUCT(kByteCode, i));
       int argCount;
       std::shared_ptr<ConstantPool::CodeAttribute> method = klass.Invoke(methodRef->Low(),
